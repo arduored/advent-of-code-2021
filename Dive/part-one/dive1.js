@@ -2,7 +2,6 @@
 // then multiply it and submit the result
 
 const fs = require('fs')
-const { mainModule } = require('process')
 
 function getFinalPosition(commands){
     let arrival = { horizontal: 0, depth: 0};
@@ -27,7 +26,7 @@ function getFinalPosition(commands){
 
 function main(){
     console.log("START")
-    const data = fs.readFileSync("./input.txt", "utf-8");
+    const data = fs.readFileSync("../input.txt", "utf-8");
     const commands = data.split("\n");
     const arrival = getFinalPosition(commands);
 
