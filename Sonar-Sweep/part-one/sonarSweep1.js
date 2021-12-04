@@ -24,7 +24,7 @@ function main() {
     console.log("START")
     let data = null;
     try{
-        const content = fs.readFileSync("input.txt", 'utf-8');
+        const content = fs.readFileSync("../input.txt", 'utf-8');
         data = content.split("\n");
 
         console.log(`Number of measurements: ${data.length}`);
@@ -38,5 +38,7 @@ function main() {
 
     console.log("END");
 }
+
+module.exports = { countIncreases };
 
 main()
