@@ -15,76 +15,76 @@ function getBoards(data){
     return boards
 }
 
-function checkNumOnBoard(num, boards){
-    for(const board of boards){
-        board.forEach((row) => {
-            const index = row.findIndex((cell) => {
-                return cell === num
-            })
-            if(index > -1){
-                row[index] = true
-            }
+function checkNumOnBoard(num, board){
+    board.forEach((row) => {
+        const index = row.findIndex((cell) => {
+            return cell === num
         })
-    }
-    return boards
+        if(index > -1){
+            row[index] = true
+        }
+    })
+    return board
 }
 
-function hasBingo(boards){
-    let winningBoard = null
-    
-    for(const [index, board] of boards.entries()){
-        for(let i=0; i < board.length; i++){
-            const hasWinningRow = board[i].every((cell) => cell === true)
-            if(hasWinningRow){
-            winningBoard = index
-            break
-            }
-
-            const hasWinningCol = board.every((row) => row[i] === true)
-            if(hasWinningCol){
-                winningBoard = index
-                break
-            }
+function hasBingo(board){
+    for(let i=0; i < board.length; i++){
+        const hasWinningRow = board[i].every((cell) => cell === true)
+        if(hasWinningRow){
+            return true
         }
 
-        if(winningBoard){
-            break
+        const hasWinningCol = board.every((row) => row[i] === true)
+        if(hasWinningCol){
+            return true
         }
     }
-    return winningBoard
+    return false
 }
 
-function calculateScore(board, lastDraw){
+function calculateScore(boardItem){
     let sum = 0
-    console.log(board)
-    for(const row of board){
+    for(const row of boardItem.board){
         row.forEach((cell) => {
             if(typeof cell === "string"){
                 sum += parseInt(cell, 10)
             }
         })
     }
-    return sum * parseInt(lastDraw)
+    return sum * boardItem.draw
 }
 
 function playBingo(draw, boards){
-    let score = 0
+    const game = boards.reduce((acc, curr) => {
+        return acc.concat([
+            {bingo: false, board: curr, score: 0, draw: 0,  order: 0}])
+    }, [])
+    let bingoOrder = 0
+
     for(let num of draw.split(",")){
-        boards = checkNumOnBoard(num, boards)
-        const winningBoard = hasBingo(boards)
-        if(winningBoard){
-            score = calculateScore(boards[winningBoard], num)
-            break
-        }
+        game.forEach((item) => {
+            if(!item.bingo){
+                item.board = checkNumOnBoard(num, item.board)
+                item.bingo = hasBingo(item.board)
+                if(item.bingo){
+                    bingoOrder++
+                    item.order = bingoOrder
+                    item.draw = parseInt(num)
+                    item.score = calculateScore(item)
+                }
+            }
+        })
     }
-    return score
+
+    return game
 }
 
 function main(){
     console.log("START")
     const [draw, ...boardsData] = fs.readFileSync("../input.txt", "utf-8").split("\n").filter((entry) => entry !== "")
     const boards = getBoards(boardsData)
-    const score = playBingo(draw, boards)
+    const game = playBingo(draw, boards)
+    const score = game.find((item) => item.bingo && item.order === 1).score
     console.log(`BINGO! The score is: ${score}`)
     console.log("END")
 }
@@ -92,9 +92,7 @@ function main(){
 
 module.exports = {
     getBoards,
-    checkNumOnBoard,
-    hasBingo,
-    calculateScore
+    playBingo,
 }
 
-// main()
+main()
