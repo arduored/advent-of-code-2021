@@ -7,3 +7,5 @@
 ## DAY 3: [Binary Diagnostic](https://adventofcode.com/2021/day/3)
 
 ## DAY 4: [Giant Squid](https://adventofcode.com/2021/day/4)
+
+## DAY 5: [Hydrothermal Venture](https://adventofcode.com/2021/day/5)
